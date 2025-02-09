@@ -1,79 +1,62 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
+import Sequelize, { Model } from "sequelize";
+import bcrypt from "bcryptjs";
 
-const UserSchema = new mongoose.Schema({
-  email: { type: String, required: true },
-  password: { type: String, required: true },
-});
-
-const UserModel = mongoose.model("User", UserSchema);
-
-class User {
-  constructor(body) {
-    this.body = body;
-    this.errors = [];
-    this.user = null;
-  }
-
-  async login() {
-    this.validate();
-    if (this.errors.length > 0) return;
-
-    this.user = await UserModel.findOne({ email: this.body.email });
-
-    if (!this.user) {
-      this.errors.push("User does not exist.");
-      return;
-    }
-
-    if (!bcrypt.compareSync(this.body.password, this.user.password)) {
-      this.errors.push("Invalid password.");
-      this.user = null;
-      return;
-    }
-  }
-
-  async register() {
-    this.validate();
-    if (this.errors.length > 0) return;
-
-    await this.alreadyExists();
-
-    if (this.errors.length > 0) return;
-
-    const salt = bcrypt.genSaltSync();
-    this.body.password = bcrypt.hashSync(this.body.password, salt);
-    this.user = await UserModel.create(this.body);
-  }
-
-  async alreadyExists() {
-    const user = await UserModel.findOne({ email: this.body.email });
-
-    if (user) this.errors.push("User already exists.");
-  }
-
-  validate() {
-    this.cleanUp();
-    if (!validator.isEmail(this.body.email))
-      this.errors.push("Invalid e-mail.");
-    if (this.body.password.length < 3 || this.body.password.length > 50) {
-      this.errors.push("The password must be between 3 and 50 characters.");
-    }
-  }
-
-  cleanUp() {
-    for (const key in this.body) {
-      if (typeof this.body[key] !== "string") {
-        this.body[key] = "";
+export default class User extends Model {
+  static init(sequelize) {
+    super.init(
+      {
+        name: {
+          type: Sequelize.STRING,
+          defaultValue: "",
+          validate: {
+            len: {
+              args: [3, 255],
+              msg: "Name must have between 3 and 255 characters",
+            },
+          },
+        },
+        email: {
+          type: Sequelize.STRING,
+          defaultValue: "",
+          unique: {
+            msg: "Email already exists",
+          },
+          validate: {
+            isEmail: {
+              msg: "Invalid email",
+            },
+          },
+        },
+        password: {
+          type: Sequelize.VIRTUAL,
+          defaultValue: "",
+          validate: {
+            len: {
+              args: [6, 50],
+              msg: "Password must have between 6 and 50 characters",
+            },
+          },
+        },
+        password_hash: {
+          type: Sequelize.STRING,
+          defaultValue: "",
+        },
+      },
+      {
+        sequelize,
       }
-    }
+    );
 
-    this.body = {
-      email: this.body.email,
-      password: this.body.password,
-    };
+    this.addHook("beforeSave", async (user) => {
+      if (user.password) {
+        user.password_hash = await bcrypt.hash(user.password, 8);
+      }
+    });
+
+    return this;
+  }
+
+  checkPassword(password) {
+    return bcrypt.compare(password, this.password_hash);
   }
 }
-
-module.exports = User;

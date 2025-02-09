@@ -1,7 +1,7 @@
-const Contact = require("../models/Contact");
+class Home {
+  async index(req, res) {
+    res.status(200).json("OK");
+  }
+}
 
-exports.index = async (req, res) => {
-  const contacts = await Contact.listContacts(req.session.user._id);
-  res.render("index", { contacts });
-  return;
-};
+export default new Home();
