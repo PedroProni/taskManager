@@ -9,10 +9,6 @@ export default async (req, res, next) => {
   }
 
   const isApiRequest = req.path.startsWith('/api/');
-  console.log('Request path:', req.path, 'Is API:', isApiRequest);
-
-  console.log('Headers:', req.headers);
-  console.log('Auth header:', req.headers.authorization);
   
   const authHeader = req.headers.authorization;
 
@@ -20,26 +16,22 @@ export default async (req, res, next) => {
     if (isApiRequest) {
       return res.status(401).json({ errors: ["No authorization header"] });
     }
-    console.log('No auth header - redirecting to login');
     return res.redirect('/login');
   }
 
   const token = authHeader.split(' ')[1];
   
   if (!token) {
-    console.log('No token found in auth header');
     return res.status(401).json({ errors: ["No token provided"] });
   }
 
   try {
-    console.log('Verifying token...');
     const data = jwt.verify(token, process.env.TOKEN_SECRET);
     const { id, email } = data;
     
     const user = await User.findOne({ where: { id, email } });
     
     if (!user) {
-      console.log('User not found for token');
       return res.status(401).json({ errors: ["User not found"] });
     }
 

@@ -64,7 +64,6 @@ export default class User {
     }
 
     if (passwordInput.value.length < 3 || passwordInput.value.length > 50) {
-      console.log(passwordInput.value.length);
       const errorMessage = document.createElement("div");
       errorMessage.textContent =
         "The password must be between 3 and 50 characters.";
