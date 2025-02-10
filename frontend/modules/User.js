@@ -5,6 +5,19 @@ import api from '../services/axios';
 export default class User {
   constructor(formClass) {
     this.form = document.querySelector(formClass);
+    this.logoutBtn = document.querySelector('#logout-btn');
+    this.init();
+  }
+
+  init() {
+    if (this.logoutBtn) {
+      this.logoutBtn.addEventListener('click', () => this.logout());
+    }
+  }
+
+  logout() {
+    Auth.removeToken();
+    Auth.redirectToLogin();
   }
 
   execute() {
