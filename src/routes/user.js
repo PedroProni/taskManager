@@ -9,6 +9,6 @@ router.get("/login", userController.loadLogin);
 router.post("/login", userController.login);
 router.put("/update", authMiddleware, userController.update);
 router.delete("/delete", authMiddleware, userController.delete);
-router.post("/logout", userController.logout); // Adicione esta linha
+router.post("/logout", userController.logout);
 
 export default router;

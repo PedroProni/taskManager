@@ -32,7 +32,6 @@ class App {
   }
 
   routes() {
-    // Public routes that bypass auth
     this.app.get('/login', (req, res, next) => {
       if (req.headers.authorization) {
         return res.redirect('/');
@@ -43,10 +42,8 @@ class App {
     this.app.get('/register', userRoutes);
     this.app.post('/register', userRoutes);
     
-    // Auth middleware for all other routes
     this.app.use(authMiddleware);
     
-    // Protected routes
     this.app.use('/', homeRoutes);
     this.app.use('/tasks', taskRoutes);
   }

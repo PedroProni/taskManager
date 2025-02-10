@@ -7,7 +7,7 @@ export default class Task {
     this.currentTask = null;
     this.filterButtons = document.querySelectorAll('[data-filter]');
     this.currentFilter = 'all';
-    this.tasks = []; // Store all tasks
+    this.tasks = []; 
   }
 
   async execute() {
@@ -34,7 +34,6 @@ export default class Task {
       }
     });
 
-    // Add filter buttons event listeners
     this.filterButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         e.preventDefault();
@@ -43,7 +42,6 @@ export default class Task {
       });
     });
 
-    // Add status change event listener
     this.taskList.addEventListener('change', async (e) => {
       if (e.target.classList.contains('task-status')) {
         const taskId = e.target.dataset.id;
@@ -54,7 +52,6 @@ export default class Task {
   }
 
   handleFilter(filterType, clickedButton) {
-    // Update active button
     this.filterButtons.forEach(button => {
       button.classList.remove('active');
     });
@@ -130,7 +127,7 @@ export default class Task {
   async loadTasks() {
     try {
       this.tasks = await this.getAllTasks();
-      this.filterTasks(); // Use filterTasks instead of direct rendering
+      this.filterTasks();
     } catch (error) {
       console.error('Error loading tasks:', error);
     }
