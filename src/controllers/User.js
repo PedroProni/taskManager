@@ -3,11 +3,11 @@ import jwt from "jsonwebtoken";
 
 class UserC {
   async loadRegister(req, res) {
-    res.render("register");
+    res.render("register", { isLoggedIn: false });
   }
 
   async loadLogin(req, res) {
-    res.render("login");
+    res.render("login", { isLoggedIn: false });
   }
 
   async register(req, res) {
@@ -84,7 +84,8 @@ class UserC {
   }
 
   async logout(req, res) {
-    res.status(200).json(null);
+    res.clearCookie('token');
+    res.redirect('/login');
   }
 }
 

@@ -2,53 +2,52 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 export default async (req, res, next) => {
-  const publicPaths = ['/login', '/register', '/favicon.ico'];
-  if (publicPaths.includes(req.path) || req.path.startsWith('/assets/')) {
+  const publicRoutes = ['/', '/login', '/register'];
+  
+  if (publicRoutes.includes(req.path)) {
     return next();
   }
 
-  const { authorization } = req.headers;
+  const isApiRequest = req.path.startsWith('/api/');
+  console.log('Request path:', req.path, 'Is API:', isApiRequest);
 
-  const isApiRequest =
-    req.xhr ||
-    req.path.startsWith('/tasks') ||
-    req.headers.accept?.includes('application/json') ||
-    req.headers['content-type']?.includes('application/json');
+  console.log('Headers:', req.headers);
+  console.log('Auth header:', req.headers.authorization);
+  
+  const authHeader = req.headers.authorization;
 
-  if (!authorization) {
+  if (!authHeader) {
     if (isApiRequest) {
-      return res.status(401).json({
-        errors: ["Login required"],
-      });
+      return res.status(401).json({ errors: ["No authorization header"] });
     }
+    console.log('No auth header - redirecting to login');
     return res.redirect('/login');
   }
 
+  const token = authHeader.split(' ')[1];
+  
+  if (!token) {
+    console.log('No token found in auth header');
+    return res.status(401).json({ errors: ["No token provided"] });
+  }
+
   try {
-    const [, token] = authorization.split(" ");
+    console.log('Verifying token...');
     const data = jwt.verify(token, process.env.TOKEN_SECRET);
     const { id, email } = data;
-
+    
     const user = await User.findOne({ where: { id, email } });
+    
     if (!user) {
-      if (isApiRequest) {
-        return res.status(401).json({
-          errors: ["Invalid user"],
-        });
-      }
-      return res.redirect('/login');
+      console.log('User not found for token');
+      return res.status(401).json({ errors: ["User not found"] });
     }
 
     req.userId = id;
     req.userEmail = email;
     return next();
   } catch (err) {
-    console.error('Auth Error:', err);
-    if (isApiRequest) {
-      return res.status(401).json({
-        errors: ["Token invalid"],
-      });
-    }
-    return res.redirect('/login');
+    console.error('Token verification error:', err);
+    return res.status(401).json({ errors: ["Invalid or expired token"] });
   }
 };

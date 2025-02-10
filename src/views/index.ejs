@@ -10,9 +10,11 @@
       <form class="task-form">
         <div class="input-group mb-3">
           <input type="text" class="form-control" id="taskTitle" placeholder="Enter task title" name="title"/>
+          <div class="error-container w-100"></div>
         </div>
         <div class="input-group mb-3">
           <textarea class="form-control" id="taskDescription" name="description" placeholder="Enter task description"></textarea>
+          <div class="error-container w-100"></div>
         </div>
         <div class="input-group mb-3">
           <button class="btn btn-primary" id="addTask">Add Task</button>
@@ -25,17 +27,9 @@
           <button class="btn btn-outline-secondary" data-filter="completed">Completed</button>
         </div>
 
-        <ul id="taskList" class="list-group mb-3"></ul>
+        <ul id="taskList" class="list-group mb-3">
+        </ul>
       </form>
-
-      <div class="responsive-table">
-        <table class="table table-bordered my-3">
-            <tr>
-              <td><a href="/" class="btn btn-warning btn-sm">Edit</a></td>
-              <td><a href="/" class="btn btn-danger btn-sm">Delete</a></td>
-            </tr>
-        </table>
-      </div>
 
       <div class="col-lg-2"></div>
     </div>
