@@ -27,6 +27,10 @@ export default class Task extends Model {
             },
           },
         },
+        userId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+        },
       },
       {
         sequelize,

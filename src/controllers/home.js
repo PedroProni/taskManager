@@ -1,6 +1,9 @@
+import Task from "../models/Task";
+
 class Home {
   async index(req, res) {
-    res.status(200).json("OK");
+    // const tasks = await Task.findAll({ where: { user_id: req.userId } });
+    res.render("index");
   }
 }
 

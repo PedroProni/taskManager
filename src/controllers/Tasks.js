@@ -2,13 +2,19 @@ import Task from "../models/Task";
 
 class Tasks {
   async index(req, res) {
-    const tasks = await Task.findAll();
+    const tasks = await Task.findAll({
+      where: { userId: req.userId },
+      attributes: { exclude: ['userId'] }
+    });
     res.status(200).json(tasks);
   }
 
   async show(req, res) {
     const { id } = req.params;
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: { id, userId: req.userId },
+      attributes: { exclude: ['userId'] }
+    });
     if (!task) {
       return res.status(404).json({ error: "Task not found" });
     }
@@ -23,8 +29,9 @@ class Tasks {
           errors: ["Status must be pending, in_progress or completed"],
         });
       }
-      const task = await Task.create({ title, description, status });
-      res.status(200).json(task);
+      const task = await Task.create({ title, description, status, userId: req.userId });
+      const { userId, ...taskWithoutUserId } = task.toJSON();
+      res.status(200).json(taskWithoutUserId);
     } catch (err) {
       res.status(400).json({ errors: err.errors.map((e) => e.message) });
     }
@@ -33,7 +40,7 @@ class Tasks {
   async update(req, res) {
     const { id } = req.params;
     const { title, description, status } = req.body;
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({ where: { id, userId: req.userId } });
     if (!task) {
       return res.status(404).json({ errors: ["Task not found"] });
     }
@@ -42,7 +49,8 @@ class Tasks {
     task.status = status;
     try {
       await task.save();
-      res.status(200).json(task);
+      const { userId, ...taskWithoutUserId } = task.toJSON();
+      res.status(200).json(taskWithoutUserId);
     } catch (err) {
       res.status(400).json({ errors: err.errors.map((e) => e.message) });
     }
@@ -50,7 +58,7 @@ class Tasks {
 
   async delete(req, res) {
     const { id } = req.params;
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({ where: { id, userId: req.userId } });
     if (!task) {
       return res.status(404).json({ errors: ["Task not found"] });
     }
