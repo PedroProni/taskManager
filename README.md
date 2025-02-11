@@ -18,19 +18,16 @@ Configurar variáveis de ambiente
 Crie um arquivo .env na raiz do projeto e configure as variáveis conforme necessário.
 
 
-Instalar dependências
 
 # Instala as dependências do projeto
 npm i
 
 
-Gerar o bundle.js
 
 # Gera o arquivo bundle.js usando Webpack
 npx webpack
 
 
-Iniciar o projeto
 
 # Inicia o servidor de desenvolvimento
 npm run dev
