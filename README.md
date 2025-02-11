@@ -1,8 +1,3 @@
-Task Manager
-
-Configuração e Execução
-
-Clonar o projeto
 
 Execute os seguintes comandos no terminal:
 
