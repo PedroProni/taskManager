@@ -32,4 +32,4 @@ npm run dev
 
 URL: https://api.postman.com/collections/21821068-bf7f4f5a-c61d-4b28-873d-878c718ee337?access_key=PMAT-01JKTMF44ZE2VS7M1JS9S2X9MD
 
-Para importar a URL acesse Import e cole a URL
+Para importar a collection acesse Import e cole a URL
